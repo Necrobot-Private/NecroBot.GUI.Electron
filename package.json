@@ -20,8 +20,8 @@
   "license": "CC0-1.0",
   "devDependencies": {
     "electron": "^1.4.15",
-    "electron-builder": "^8.6.0",
-    "electron-packager": "^8.3.0"
+    "electron-builder": "^14.4.0",
+    "electron-packager": "^8.5.2"
   },
   "build": {
     "appId": "necrobot2.gui",
