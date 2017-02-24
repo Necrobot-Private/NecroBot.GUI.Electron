@@ -1,6 +1,6 @@
 {
   "name": "NecroBot2-GUI",
-  "version": "1.0.0",
+  "version": "1.0.0.118",
   "description": "Necrobot2 GUI (PokeEase Fork)",
   "main": "main.js",
   "scripts": {
