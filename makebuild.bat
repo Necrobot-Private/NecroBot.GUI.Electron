@@ -1,2 +1,2 @@
 npm install
-npm run pack
+npm run dist
