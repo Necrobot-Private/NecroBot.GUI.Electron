@@ -18,7 +18,7 @@ function sendStatus(text) {
 
 autoUpdater.on('checking-for-update', () => {
   sendStatus('Checking for Updates...');
-  autoUpdater.checkForUpdates()
+  autoUpdater.checkForUpdates();
 })
 autoUpdater.on('update-available', (ev, info) => {
   sendStatus('Updates are Available'+ releaseName + '-' + releaseDate +', Downloading.');
