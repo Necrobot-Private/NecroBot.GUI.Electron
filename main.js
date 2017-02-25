@@ -31,7 +31,7 @@ autoUpdater.on('error', (ev, err) => {
 })
 autoUpdater.on('download-progress', (ev, progressObj) => {
   sendStatus('Downloading Update...');
-  sendStatus(total + '('+ percent +' @'+ bytesPerSecond +')'
+  sendStatus(total + '('+ percent +' @'+ bytesPerSecond +')');
   log.info('progressObj', progressObj);
 })
 autoUpdater.on('update-downloaded', (ev, info) => {
@@ -95,7 +95,7 @@ function createWindow () {
   }))
 
   // Open the DevTools.
-  //mainWindow.webContents.openDevTools()
+  mainWindow.webContents.openDevTools()
 
   // Emitted when the window is closed.
   mainWindow.on('closed', function () {
