@@ -1,6 +1,6 @@
 {
   "name": "NecroBot2-GUI",
-  "version": "1.0.119",
+  "version": "1.0.120",
   "description": "Necrobot2 GUI (PokeEase Fork)",
   "main": "main.js",
   "scripts": {
@@ -10,7 +10,8 @@
     "dist": "build --win --x64",
     "dist32": "build --win --ia32",
     "zip": "build --win zip --x64",
-    "zip32": "build --win zip --ia32"
+    "zip32": "build --win zip --ia32",
+	"publish": "build --win --x64 --publish always"
   },
   "repository": "https://github.com/Necrobot-Private/NecroBot",
   "keywords": [
@@ -21,7 +22,8 @@
   "devDependencies": {
     "electron": "^1.4.15",
     "electron-builder": "^14.4.0",
-    "electron-packager": "^8.5.2"
+    "electron-packager": "^8.5.2",
+	"electron-updater": "^1.7.1"
   },
   "build": {
     "appId": "necrobot2.gui",
@@ -29,5 +31,14 @@
     "win": {
       "iconUrl": "http://i.imgur.com/PD5Nx4d.png"
     }
+	"publish": [{
+		"provider": "github",
+		"owner": "Necrobot-Private",
+		"repo": "Necrobot",
+		"GH_TOKEN": ""
+	}]
+  }
+  "nsis": {
+	"installerIcon": "http://i.imgur.com/PD5Nx4d.png"
   }
 }
