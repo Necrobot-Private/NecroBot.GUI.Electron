@@ -1,25 +1,45 @@
 const electron = require('electron')
-// Module to control application life + native browser window + autoUpdater
-const {app,BrowserWindow,autoUpdater} = electron
+// Module to control application life + native browser window
+const {app,BrowserWindow,} = electron
+// Module to Control AutoUpdater
+const {autoUpdater} = require("electron-updater")
 
 const path = require('path')
 const url = require('url')
-const feedURL = 'https://github.com/Necrobot-Private/NecroBot/releases';
+// const feedURL = 'https://github.com/Necrobot-Private/NecroBot/releases';
 
 // START UPDATE EVENT - Check for Updates on Launch
-autoUpdater.setFeedURL(feedURL);
+// autoUpdater.setFeedURL(feedURL); - DEPRECATED
 
-if (handleSquirrelEvent()) {
-  // squirrel event handled and app will exit in 1000ms, so don't do anything else
-  return;
+function sendStatus(text) {
+  log.info(text);
+  win.webContents.send('message', text);
 }
 
-autoUpdater.addListener("update-downloaded", function(event, releaseNotes, releaseName, releaseDate, updateURL) {
-		 dialog.showMessageBox({
+autoUpdater.on('checking-for-update', () => {
+  sendStatus('Checking for Updates...');
+  autoUpdater.checkForUpdates()
+})
+autoUpdater.on('update-available', (ev, info) => {
+  sendStatus('Updates are Available'+ releaseName + '-' + releaseDate +', Downloading.');
+})
+autoUpdater.on('update-not-available', (ev, info) => {
+  sendStatus('Latest Version already Installed ('+ version +').');
+})
+autoUpdater.on('error', (ev, err) => {
+  sendStatus('Update Error, Cannot Continue.');
+})
+autoUpdater.on('download-progress', (ev, progressObj) => {
+  sendStatus('Downloading Update...');
+  sendStatus(total + '('+ percent +' @'+ bytesPerSecond +')'
+  log.info('progressObj', progressObj);
+})
+autoUpdater.on('update-downloaded', (ev, info) => {
+  dialog.showMessageBox({
 			type: 'info',
 			title: 'Update has been Completed',
 			buttons: ['Restart now', 'Later'],
-			message: 'Version '+ releaseName +' has been downloaded, Would you like to restart?'
+			message: 'Version '+ releaseName + releaseDate + ' has been downloaded, Would you like to restart?'
 		  }, function (buttonIndex){
 			  if(buttonIndex == 0)
 			  {
@@ -27,69 +47,8 @@ autoUpdater.addListener("update-downloaded", function(event, releaseNotes, relea
 			  }
 			}
 		  );
-});
+})
 
-function handleSquirrelEvent() {
-  if (process.argv.length === 1) {
-    return false;
-  }
-
-  const ChildProcess = require('child_process');
-  const path = require('path');
-
-  const appFolder = path.resolve(process.execPath, '..');
-  const rootAtomFolder = path.resolve(appFolder, '..');
-  const updateDotExe = path.resolve(path.join(rootAtomFolder, 'Update.exe'));
-  const exeName = path.basename(process.execPath);
-
-  const spawn = function(command, args) {
-    let spawnedProcess, error;
-
-    try {
-      spawnedProcess = ChildProcess.spawn(command, args, {detached: true});
-    } catch (error) {}
-
-    return spawnedProcess;
-  };
-
-  const spawnUpdate = function(args) {
-    return spawn(updateDotExe, args);
-  };
-
-  const squirrelEvent = process.argv[1];
-  switch (squirrelEvent) {
-    case '--squirrel-install':
-    case '--squirrel-updated':
-      // Optionally do things such as:
-      // - Add your .exe to the PATH
-      // - Write to the registry for things like file associations and
-      //   explorer context menus
-
-      // Install desktop and start menu shortcuts
-      spawnUpdate(['--createShortcut', exeName]);
-
-      setTimeout(app.quit, 1000);
-      return true;
-
-    case '--squirrel-uninstall':
-      // Undo anything you did in the --squirrel-install and
-      // --squirrel-updated handlers
-
-      // Remove desktop and start menu shortcuts
-      spawnUpdate(['--removeShortcut', exeName]);
-
-      setTimeout(app.quit, 1000);
-      return true;
-
-    case '--squirrel-obsolete':
-      // This is called on the outgoing version of your app before
-      // we update to the new version - it's the opposite of
-      // --squirrel-updated
-
-      app.quit();
-      return true;
-  }
-};
 // END UPDATE EVENT
 
 // Keep a global reference of the window object, if you don't, the window will
