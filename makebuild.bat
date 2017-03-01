@@ -1,2 +1,1 @@
-npm install
-npm run pack
+npm install && npm run pack
