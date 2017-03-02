@@ -1236,13 +1236,22 @@ var SnipeMarker = function(a) {
 				}
 			}, this.displayPokemonInfo = function(a) {
 				var c = a;
-				c.Name = b.config.translationController.translation.pokemonNames[a.PokemonId], c.PokemonTypes = [], c.Move1Name = b.config.translationController.translation.moveNames[a.Move1], c.Move2Name = b.config.translationController.translation.moveNames[a.Move2];
+				c.Name = b.config.translationController.translation.pokemonNames[a.PokemonId], c.PokemonTypes = [], c.Move1Name = b.config.translationController.translation.moveNames[a.Move1] || "No translation for " + c.Move1, c.Move2Name = b.config.translationController.translation.moveNames[a.Move2] || "No translation for " + c.Move2, c.CreationDateTime = new Date(+c.CreationTimeMs).toLocaleString(navigator.language, {
+					hour12: !0
+				}).toUpperCase();
 				for (var d = StaticData.pokemonData[a.PokemonId], e = 0; e < d.elements.length; e++) {
 					var f = PokeElement[d.elements[e]].toLowerCase();
 					c.PokemonTypes.push(f)
 				}
 				b.config.pokemonMenuElement.closest("#content-wrap").addClass("blurred");
-				var g = $(app.templates.Pokemon.PokemonInfo(a));
+				var g = $(app.templates.Pokemon.PokemonInfo(a)),
+					h = g.find("#evolve-pokemon-button");
+				if (0 === StaticData.pokemonData[a.PokemonId].evolvesInto.length) h.hide();
+				else {
+					var i = StaticData.pokemonData[a.PokemonId].candyToEvolve,
+						j = i - c.FamilyCandies;
+					h.find(".button-disabled-reason").text(j + " of " + i + " candies required"), "undefined" != typeof a.FamilyCandies && a.FamilyCandies < i ? h.addClass("disabled") : h.removeClass("disabled"), h.show()
+				}
 				g.bind("click", function() {
 					return !1
 				}), g.find("#confirm-transfer").click(b.transferPokemon), g.find("#confirm-evolve").click(b.evolvePokemon), g.find("#confirm-upgrade").click(b.upgradePokemon), g.find("#confirm-upgrade-max").click(b.maxUpgradePokemon), g.find(".close-button").click(b.close), b.config.pokemonDetailsElement.html("").append(g), b.config.pokemonDetailsElement.fadeIn()
@@ -1646,7 +1655,7 @@ var DesktopNotificationController = function() {
 				d.slideUp(300, function() {
 					d.remove(), _.remove(b.notifications, function(a) {
 						return a.element.is(d)
-					}), b.config.notificationCounter.text(b.notifications.length)
+					}), b.config.notificationCounter.text(b.notifications.length);
 				})
 			}, this.onSettingsChanged = function(a, c) {
 				b.config.notificationSettings = a.notificationsJournal
@@ -22810,7 +22819,7 @@ var BotWSClient = function() {
 						};
 					_.each(A, function(a) {
 						var b = a.Item1;
-						b.Perfection = a.Item2, b.FamilyCandies = a.Item3, B.Pokemons.push(b)
+						b.Perfection = a.Item2, b.FamilyCandies = a.Item3, b.Level = a.Item4, B.Pokemons.push(b)
 					}), _.each(a.config.eventHandlers, function(a) {
 						return a.onPokemonList(B)
 					})
@@ -22822,7 +22831,7 @@ var BotWSClient = function() {
 						};
 					_.each(A, function(a) {
 						var b = a.Base;
-						b.Perfection = a.IvPerfection, b.FamilyCandies = a.FamilyCandies, C.Pokemons.push(b)
+						b.Perfection = a.IvPerfection, b.FamilyCandies = a.FamilyCandies, b.Level = a.Level, C.Pokemons.push(b)
 					}), _.each(a.config.eventHandlers, function(a) {
 						return a.onPokemonList(C)
 					})
@@ -23443,10 +23452,10 @@ var TranslationService = function() {
 					transfer: "transfer",
 					"incubator-status": "incubator",
 					"egg-hatched": "hatched"
-				}, this.itemNames = [], this.itemNames[1] = "Pokeball", this.itemNames[2] = "Greatball", this.itemNames[3] = "Ultraball", this.itemNames[4] = "Masterball", this.itemNames[101] = "Potion", this.itemNames[102] = "Super Potion", this.itemNames[103] = "Hyper Potion", this.itemNames[104] = "Max Potion", this.itemNames[201] = "Revive", this.itemNames[202] = "Max Revive", this.itemNames[701] = "Razzberry", this.pokemonTypes = [], this.pokemonTypes[PokeElement.Bug] = "Bug", this.pokemonTypes[PokeElement.Grass] = "Grass", this.pokemonTypes[PokeElement.Dark] = "Dark", this.pokemonTypes[PokeElement.Ground] = "Ground", this.pokemonTypes[PokeElement.Dragon] = "Dragon", this.pokemonTypes[PokeElement.Ice] = "Ice", this.pokemonTypes[PokeElement.Electric] = "Electric", this.pokemonTypes[PokeElement.Normal] = "Normal", this.pokemonTypes[PokeElement.Fairy] = "Fairy", this.pokemonTypes[PokeElement.Poison] = "Poison", this.pokemonTypes[PokeElement.Fighting] = "Fighting", this.pokemonTypes[PokeElement.Psychic] = "Psychic", this.pokemonTypes[PokeElement.Fire] = "Fire", this.pokemonTypes[PokeElement.Rock] = "Rock", this.pokemonTypes[PokeElement.Flying] = "Flying", this.pokemonTypes[PokeElement.Steel] = "Steel", this.pokemonTypes[PokeElement.Ghost] = "Ghost", this.pokemonTypes[PokeElement.Water] = "Water", this.moveNames = [], this.moveNames[0] = "Move Unset", this.moveNames[1] = "Thunder Shock", this.moveNames[2] = "Quick Attack", this.moveNames[3] = "Scratch", this.moveNames[4] = "Ember", this.moveNames[5] = "Vine Whip", this.moveNames[6] = "Tackle", this.moveNames[7] = "Razor Leaf", this.moveNames[8] = "Take Down",
-				this.moveNames[9] = "Water Gun", this.moveNames[10] = "Bite", this.moveNames[11] = "Pound", this.moveNames[12] = "Double Slap", this.moveNames[13] = "Wrap", this.moveNames[14] = "Hyper Beam", this.moveNames[15] = "Lick", this.moveNames[16] = "Dark Pulse", this.moveNames[17] = "Smog", this.moveNames[18] = "Sludge", this.moveNames[19] = "Metal Claw", this.moveNames[20] = "Vice Grip", this.moveNames[21] = "Flame Wheel", this.moveNames[22] = "Megahorn", this.moveNames[23] = "Wing Attack", this.moveNames[24] = "Flamethrower", this.moveNames[25] = "Sucker Punch", this.moveNames[26] = "Dig", this.moveNames[27] = "Low Kick", this.moveNames[28] = "Cross Chop", this.moveNames[29] = "Psycho Cut", this.moveNames[30] = "Psybeam", this.moveNames[31] = "Earthquake", this.moveNames[32] = "Stone Edge", this.moveNames[33] = "Ice Punch", this.moveNames[34] = "Heart Stamp", this.moveNames[35] = "Discharge", this.moveNames[36] = "Flash Cannon", this.moveNames[37] = "Peck", this.moveNames[38] = "Drill Peck", this.moveNames[39] = "Ice Beam", this.moveNames[40] = "Blizzard", this.moveNames[41] = "Air Slash", this.moveNames[42] = "Heat Wave", this.moveNames[43] = "Twineedle", this.moveNames[44] = "Poison Jab", this.moveNames[45] = "Aerial Ace", this.moveNames[46] = "Drill Run", this.moveNames[47] = "Petal Blizzard", this.moveNames[48] = "Mega Drain", this.moveNames[49] = "Bug Buzz", this.moveNames[50] = "Poison Fang", this.moveNames[51] = "Night Slash", this.moveNames[52] = "Slash", this.moveNames[53] = "Bubble Beam", this.moveNames[54] = "Submission", this.moveNames[55] = "Karate Chop", this.moveNames[56] = "Low Sweep", this.moveNames[57] = "Aqua Jet", this.moveNames[58] = "Aqua Tail", this.moveNames[59] = "Seed Bomb", this.moveNames[60] = "Psyshock", this.moveNames[61] = "Rock Throw", this.moveNames[62] = "Ancient Power", this.moveNames[63] = "Rock Tomb", this.moveNames[64] = "Rock Slide", this.moveNames[65] = "Power Gem", this.moveNames[66] = "Shadow Sneak", this.moveNames[67] = "Shadow Punch", this.moveNames[68] = "Shadow Claw", this.moveNames[69] = "Ominous Wind", this.moveNames[70] = "Shadow Ball", this.moveNames[71] = "Bullet Punch", this.moveNames[72] = "Magnet Bomb", this.moveNames[73] = "Steel Wing", this.moveNames[74] = "Iron Head", this.moveNames[75] = "Parabolic Charge", this.moveNames[76] = "Spark", this.moveNames[77] = "Thunder Punch", this.moveNames[78] = "Thunder", this.moveNames[79] = "Thunderbolt", this.moveNames[80] = "Twister", this.moveNames[81] = "Dragon Breath", this.moveNames[82] = "Dragon Pulse", this.moveNames[83] = "Dragon Claw", this.moveNames[84] = "Disarming Voice", this.moveNames[85] = "Draining Kiss", this.moveNames[86] = "Dazzling Gleam", this.moveNames[87] = "Moonblast", this.moveNames[88] = "Play Rough", this.moveNames[89] = "Cross Poison", this.moveNames[90] = "Sludge Bomb", this.moveNames[91] = "Sludge Wave", this.moveNames[92] = "Gunk Shot", this.moveNames[93] = "Mud Shot", this.moveNames[94] = "Bone Club", this.moveNames[95] = "Bulldoze", this.moveNames[96] = "Mud Bomb", this.moveNames[97] = "Fury Cutter", this.moveNames[98] = "Bug Bite", this.moveNames[99] = "Signal Beam", this.moveNames[100] = "x Scissor", this.moveNames[101] = "Flame Charge", this.moveNames[102] = "Flame Burst", this.moveNames[103] = "Fire Blast", this.moveNames[104] = "Brine", this.moveNames[105] = "Water Pulse", this.moveNames[106] = "Scald", this.moveNames[107] = "Hydro Pump", this.moveNames[108] = "Psychic", this.moveNames[109] = "Psystrike", this.moveNames[110] = "Ice Shard", this.moveNames[111] = "Icy Wind", this.moveNames[112] = "Frost Breath", this.moveNames[113] = "Absorb", this.moveNames[114] = "Giga Drain", this.moveNames[115] = "Fire Punch", this.moveNames[116] = "Solar Beam", this.moveNames[117] = "Leaf Blade", this.moveNames[118] = "Power Whip", this.moveNames[119] = "Splash", this.moveNames[120] = "Acid", this.moveNames[121] = "Air Cutter", this.moveNames[122] = "Hurricane", this.moveNames[123] = "Brick Break", this.moveNames[124] = "Cut", this.moveNames[125] = "Swift", this.moveNames[126] = "Horn Attack", this.moveNames[127] = "Stomp", this.moveNames[128] = "Headbutt", this.moveNames[129] = "Hyper Fang", this.moveNames[130] = "Slam", this.moveNames[131] = "Body Slam", this.moveNames[132] = "Rest", this.moveNames[133] = "Struggle", this.moveNames[134] = "Scald Blastoise", this.moveNames[135] = "Hydro Pump Blastoise", this.moveNames[136] = "Wrap Green", this.moveNames[137] = "Wrap Pink", this.moveNames[200] = "Fury Cutter Fast", this.moveNames[201] = "Bug Bite Fast", this.moveNames[202] = "Bite Fast", this.moveNames[203] = "Sucker Punch Fast", this.moveNames[204] = "Dragon Breath Fast", this.moveNames[205] = "Thunder Shock Fast", this.moveNames[206] = "Spark Fast", this.moveNames[207] = "Low Kick Fast", this.moveNames[208] = "Karate Chop Fast", this.moveNames[209] = "Ember Fast", this.moveNames[210] = "Wing Attack Fast", this.moveNames[211] = "Peck Fast", this.moveNames[212] = "Lick Fast", this.moveNames[213] = "Shadow Claw Fast", this.moveNames[214] = "Vine Whip Fast", this.moveNames[215] = "Razor Leaf Fast", this.moveNames[216] = "Mud Shot Fast", this.moveNames[217] = "Ice Shard Fast", this.moveNames[218] = "Frost Breath Fast", this.moveNames[219] = "Quick Attack Fast", this.moveNames[220] = "Scratch Fast", this.moveNames[221] = "Tackle Fast", this.moveNames[222] = "Pound Fast", this.moveNames[223] = "Cut Fast", this.moveNames[224] = "Poison Jab Fast", this.moveNames[225] = "Acid Fast", this.moveNames[226] = "Psycho Cut Fast", this.moveNames[227] = "Rock Throw Fast";
+				}, this.itemNames = [], this.itemNames[1] = "Pokeball", this.itemNames[2] = "Greatball", this.itemNames[3] = "Ultraball", this.itemNames[4] = "Masterball", this.itemNames[101] = "Potion", this.itemNames[102] = "Super Potion", this.itemNames[103] = "Hyper Potion", this.itemNames[104] = "Max Potion", this.itemNames[201] = "Revive", this.itemNames[202] = "Max Revive", this.itemNames[701] = "Razzberry", this.pokemonTypes = [], this.pokemonTypes[PokeElement.Bug] = "Bug", this.pokemonTypes[PokeElement.Grass] = "Grass", this.pokemonTypes[PokeElement.Dark] = "Dark", this.pokemonTypes[PokeElement.Ground] = "Ground", this.pokemonTypes[PokeElement.Dragon] = "Dragon", this.pokemonTypes[PokeElement.Ice] = "Ice", this.pokemonTypes[PokeElement.Electric] = "Electric",
+				this.pokemonTypes[PokeElement.Normal] = "Normal", this.pokemonTypes[PokeElement.Fairy] = "Fairy", this.pokemonTypes[PokeElement.Poison] = "Poison", this.pokemonTypes[PokeElement.Fighting] = "Fighting", this.pokemonTypes[PokeElement.Psychic] = "Psychic", this.pokemonTypes[PokeElement.Fire] = "Fire", this.pokemonTypes[PokeElement.Rock] = "Rock", this.pokemonTypes[PokeElement.Flying] = "Flying", this.pokemonTypes[PokeElement.Steel] = "Steel", this.pokemonTypes[PokeElement.Ghost] = "Ghost", this.pokemonTypes[PokeElement.Water] = "Water", this.moveNames = [], this.moveNames[0] = "Move Unset", this.moveNames[1] = "Thunder Shock", this.moveNames[2] = "Quick Attack", this.moveNames[3] = "Scratch", this.moveNames[4] = "Ember", this.moveNames[5] = "Vine Whip", this.moveNames[6] = "Tackle", this.moveNames[7] = "Razor Leaf", this.moveNames[8] = "Take Down", this.moveNames[9] = "Water Gun", this.moveNames[10] = "Bite", this.moveNames[11] = "Pound", this.moveNames[12] = "Double Slap", this.moveNames[13] = "Wrap", this.moveNames[14] = "Hyper Beam", this.moveNames[15] = "Lick", this.moveNames[16] = "Dark Pulse", this.moveNames[17] = "Smog", this.moveNames[18] = "Sludge", this.moveNames[19] = "Metal Claw", this.moveNames[20] = "Vice Grip", this.moveNames[21] = "Flame Wheel", this.moveNames[22] = "Megahorn", this.moveNames[23] = "Wing Attack", this.moveNames[24] = "Flamethrower", this.moveNames[25] = "Sucker Punch", this.moveNames[26] = "Dig", this.moveNames[27] = "Low Kick", this.moveNames[28] = "Cross Chop", this.moveNames[29] = "Psycho Cut", this.moveNames[30] = "Psybeam", this.moveNames[31] = "Earthquake", this.moveNames[32] = "Stone Edge", this.moveNames[33] = "Ice Punch", this.moveNames[34] = "Heart Stamp", this.moveNames[35] = "Discharge", this.moveNames[36] = "Flash Cannon", this.moveNames[37] = "Peck", this.moveNames[38] = "Drill Peck", this.moveNames[39] = "Ice Beam", this.moveNames[40] = "Blizzard", this.moveNames[41] = "Air Slash", this.moveNames[42] = "Heat Wave", this.moveNames[43] = "Twineedle", this.moveNames[44] = "Poison Jab", this.moveNames[45] = "Aerial Ace", this.moveNames[46] = "Drill Run", this.moveNames[47] = "Petal Blizzard", this.moveNames[48] = "Mega Drain", this.moveNames[49] = "Bug Buzz", this.moveNames[50] = "Poison Fang", this.moveNames[51] = "Night Slash", this.moveNames[52] = "Slash", this.moveNames[53] = "Bubble Beam", this.moveNames[54] = "Submission", this.moveNames[55] = "Karate Chop", this.moveNames[56] = "Low Sweep", this.moveNames[57] = "Aqua Jet", this.moveNames[58] = "Aqua Tail", this.moveNames[59] = "Seed Bomb", this.moveNames[60] = "Psyshock", this.moveNames[61] = "Rock Throw", this.moveNames[62] = "Ancient Power", this.moveNames[63] = "Rock Tomb", this.moveNames[64] = "Rock Slide", this.moveNames[65] = "Power Gem", this.moveNames[66] = "Shadow Sneak", this.moveNames[67] = "Shadow Punch", this.moveNames[68] = "Shadow Claw", this.moveNames[69] = "Ominous Wind", this.moveNames[70] = "Shadow Ball", this.moveNames[71] = "Bullet Punch", this.moveNames[72] = "Magnet Bomb", this.moveNames[73] = "Steel Wing", this.moveNames[74] = "Iron Head", this.moveNames[75] = "Parabolic Charge", this.moveNames[76] = "Spark", this.moveNames[77] = "Thunder Punch", this.moveNames[78] = "Thunder", this.moveNames[79] = "Thunderbolt", this.moveNames[80] = "Twister", this.moveNames[81] = "Dragon Breath", this.moveNames[82] = "Dragon Pulse", this.moveNames[83] = "Dragon Claw", this.moveNames[84] = "Disarming Voice", this.moveNames[85] = "Draining Kiss", this.moveNames[86] = "Dazzling Gleam", this.moveNames[87] = "Moonblast", this.moveNames[88] = "Play Rough", this.moveNames[89] = "Cross Poison", this.moveNames[90] = "Sludge Bomb", this.moveNames[91] = "Sludge Wave", this.moveNames[92] = "Gunk Shot", this.moveNames[93] = "Mud Shot", this.moveNames[94] = "Bone Club", this.moveNames[95] = "Bulldoze", this.moveNames[96] = "Mud Bomb", this.moveNames[97] = "Fury Cutter", this.moveNames[98] = "Bug Bite", this.moveNames[99] = "Signal Beam", this.moveNames[100] = "x Scissor", this.moveNames[101] = "Flame Charge", this.moveNames[102] = "Flame Burst", this.moveNames[103] = "Fire Blast", this.moveNames[104] = "Brine", this.moveNames[105] = "Water Pulse", this.moveNames[106] = "Scald", this.moveNames[107] = "Hydro Pump", this.moveNames[108] = "Psychic", this.moveNames[109] = "Psystrike", this.moveNames[110] = "Ice Shard", this.moveNames[111] = "Icy Wind", this.moveNames[112] = "Frost Breath", this.moveNames[113] = "Absorb", this.moveNames[114] = "Giga Drain", this.moveNames[115] = "Fire Punch", this.moveNames[116] = "Solar Beam", this.moveNames[117] = "Leaf Blade", this.moveNames[118] = "Power Whip", this.moveNames[119] = "Splash", this.moveNames[120] = "Acid", this.moveNames[121] = "Air Cutter", this.moveNames[122] = "Hurricane", this.moveNames[123] = "Brick Break", this.moveNames[124] = "Cut", this.moveNames[125] = "Swift", this.moveNames[126] = "Horn Attack", this.moveNames[127] = "Stomp", this.moveNames[128] = "Headbutt", this.moveNames[129] = "Hyper Fang", this.moveNames[130] = "Slam", this.moveNames[131] = "Body Slam", this.moveNames[132] = "Rest", this.moveNames[133] = "Struggle", this.moveNames[134] = "Scald Blastoise", this.moveNames[135] = "Hydro Pump Blastoise", this.moveNames[136] = "Wrap Green", this.moveNames[137] = "Wrap Pink", this.moveNames[200] = "Fury Cutter Fast", this.moveNames[201] = "Bug Bite Fast", this.moveNames[202] = "Bite Fast", this.moveNames[203] = "Sucker Punch Fast", this.moveNames[204] = "Dragon Breath Fast", this.moveNames[205] = "Thunder Shock Fast", this.moveNames[206] = "Spark Fast", this.moveNames[207] = "Low Kick Fast", this.moveNames[208] = "Karate Chop Fast", this.moveNames[209] = "Ember Fast", this.moveNames[210] = "Wing Attack Fast", this.moveNames[211] = "Peck Fast", this.moveNames[212] = "Lick Fast", this.moveNames[213] = "Shadow Claw Fast", this.moveNames[214] = "Vine Whip Fast", this.moveNames[215] = "Razor Leaf Fast", this.moveNames[216] = "Mud Shot Fast", this.moveNames[217] = "Ice Shard Fast", this.moveNames[218] = "Frost Breath Fast", this.moveNames[219] = "Quick Attack Fast", this.moveNames[220] = "Scratch Fast", this.moveNames[221] = "Tackle Fast", this.moveNames[222] = "Pound Fast", this.moveNames[223] = "Cut Fast", this.moveNames[224] = "Poison Jab Fast", this.moveNames[225] = "Acid Fast", this.moveNames[226] = "Psycho Cut Fast", this.moveNames[227] = "Rock Throw Fast";
 			this.moveNames[228] = "Metal Claw Fast";
-			this.moveNames[229] = "Bullet Punch Fast", this.moveNames[230] = "Water Gun Fast", this.moveNames[231] = "Splash Fast", this.moveNames[232] = "Water Gun Fast Blastoise", this.moveNames[233] = "Mud Slap Fast", this.moveNames[234] = "Zen Headbutt Fast", this.moveNames[235] = "Confusion Fast", this.moveNames[236] = "Poison Sting Fast", this.moveNames[237] = "Bubble Fast", this.moveNames[238] = "Feint Attack Fast", this.moveNames[239] = "Steel Wing Fast", this.moveNames[240] = "Fire Fang Fast", this.moveNames[241] = "Rock Smash Fast"
+			this.moveNames[229] = "Bullet Punch Fast", this.moveNames[230] = "Water Gun Fast", this.moveNames[231] = "Splash Fast", this.moveNames[232] = "Water Gun Fast Blastoise", this.moveNames[233] = "Mud Slap Fast", this.moveNames[234] = "Zen Headbutt Fast", this.moveNames[235] = "Confusion Fast", this.moveNames[236] = "Poison Sting Fast", this.moveNames[237] = "Bubble Fast", this.moveNames[238] = "Feint Attack Fast", this.moveNames[239] = "Steel Wing Fast", this.moveNames[240] = "Fire Fang Fast", this.moveNames[241] = "Rock Smash Fast", this.moveNames[242] = "Transform Fast", this.moveNames[243] = "Counter Fast", this.moveNames[244] = "Powder Snow Fast", this.moveNames[245] = "Close Combat", this.moveNames[246] = "Dynamic Punch", this.moveNames[247] = "Focus Blast", this.moveNames[248] = "Aurora Beam", this.moveNames[249] = "Charge Beam Fast", this.moveNames[250] = "Volt Switch Fast", this.moveNames[251] = "Wild Charge", this.moveNames[252] = "Zap Cannon", this.moveNames[253] = "Dragon Tail Fast", this.moveNames[254] = "Avalanche", this.moveNames[255] = "Air Slash Fast", this.moveNames[256] = "Brave Bird", this.moveNames[257] = "Sky Attack", this.moveNames[258] = "Sand Tomb", this.moveNames[259] = "Rock Blast", this.moveNames[260] = "Infestation Fast", this.moveNames[261] = "Struggle Bug Fast", this.moveNames[262] = "Silver Wind", this.moveNames[263] = "Astonish Fast", this.moveNames[264] = "Hex Fast", this.moveNames[265] = "Night Shade", this.moveNames[266] = "Iron Tail Fast", this.moveNames[267] = "Gyro Ball", this.moveNames[268] = "Heavy Slam", this.moveNames[269] = "Fire Spin Fast", this.moveNames[270] = "Overheat", this.moveNames[271] = "Bullet Seed Fast", this.moveNames[272] = "Grass Knot", this.moveNames[273] = "Energy Ball", this.moveNames[274] = "Extrasensory Fast", this.moveNames[275] = "Futuresight", this.moveNames[276] = "Mirror Coat", this.moveNames[277] = "Outrage", this.moveNames[278] = "Snarl Fast", this.moveNames[279] = "Crunch", this.moveNames[280] = "Foul Play", this.moveNames[281] = "Hidden Power Fast"
 		}
 		return a
 	}(),
@@ -23748,11 +23757,11 @@ this.app = this.app || {}, this.app.templates = this.app.templates || {}, this.a
 	useData: !0
 }), this.app.templates.Pokemon.PokemonInfo = Handlebars.template({
 	1: function(a, b, c, d, e) {
-		return '        <i class="fa fa-star pokemon-info-favorite" aria-hidden="true"></i>\r\n'
+		return '\r\n    <i class="fa fa-star pokemon-info-favorite" aria-hidden="true"></i> '
 	},
 	3: function(a, b, c, d, e) {
 		var f;
-		return '        <h2 id="pokemon-info-nickname">' + a.escapeExpression((f = null != (f = c.Nickname || (null != b ? b.Nickname : b)) ? f : c.helperMissing, "function" == typeof f ? f.call(null != b ? b : {}, {
+		return '    <h2 id="pokemon-info-nickname">' + a.escapeExpression((f = null != (f = c.Nickname || (null != b ? b.Nickname : b)) ? f : c.helperMissing, "function" == typeof f ? f.call(null != b ? b : {}, {
 			name: "Nickname",
 			hash: {},
 			data: e
@@ -23761,7 +23770,15 @@ this.app = this.app || {}, this.app.templates = this.app.templates || {}, this.a
 	5: function(a, b, c, d, e) {
 		var f = a.lambda,
 			g = a.escapeExpression;
-		return '                <span class="' + g(f(b, b)) + '">' + g(f(b, b)) + "</span>\r\n"
+		return '        <span class="' + g(f(b, b)) + '">' + g(f(b, b)) + "</span> "
+	},
+	7: function(a, b, c, d, e) {
+		var f;
+		return '    <h2 class="poke-level">' + a.escapeExpression((f = null != (f = c.Level || (null != b ? b.Level : b)) ? f : c.helperMissing, "function" == typeof f ? f.call(null != b ? b : {}, {
+			name: "Level",
+			hash: {},
+			data: e
+		}) : f)) + "</h2>\r\n"
 	},
 	compiler: [7, ">= 4.0.0"],
 	main: function(a, b, c, d, e) {
@@ -23769,13 +23786,13 @@ this.app = this.app || {}, this.app.templates = this.app.templates || {}, this.a
 			i = c.helperMissing,
 			j = "function",
 			k = a.escapeExpression;
-		return '<div class="vertical-align-helper"></div>\r\n    <div id="pokemon-content">\r\n        <i class="fa fa-times close-button"></i>\r\n' + (null != (f = c.if.call(h, null != b ? b.Favorite : b, {
+		return '<div class="vertical-align-helper"></div>\r\n<div id="pokemon-content">\r\n    <i class="fa fa-times close-button"></i> ' + (null != (f = c.if.call(h, null != b ? b.Favorite : b, {
 			name: "if",
 			hash: {},
 			fn: a.program(1, e, 0),
 			inverse: a.noop,
 			data: e
-		})) ? f : "") + '        <h1 id="pokemon-info-name">' + k((g = null != (g = c.Name || (null != b ? b.Name : b)) ? g : i, typeof g === j ? g.call(h, {
+		})) ? f : "") + '\r\n    <h1 id="pokemon-info-name">' + k((g = null != (g = c.Name || (null != b ? b.Name : b)) ? g : i, typeof g === j ? g.call(h, {
 			name: "Name",
 			hash: {},
 			data: e
@@ -23785,49 +23802,67 @@ this.app = this.app || {}, this.app.templates = this.app.templates || {}, this.a
 			fn: a.program(3, e, 0),
 			inverse: a.noop,
 			data: e
-		})) ? f : "") + '        <img id="pokemon-info-image" src="images/pokemon/' + k((g = null != (g = c.PokemonId || (null != b ? b.PokemonId : b)) ? g : i, typeof g === j ? g.call(h, {
+		})) ? f : "") + '    <img id="pokemon-info-image" src="images/pokemon/' + k((g = null != (g = c.PokemonId || (null != b ? b.PokemonId : b)) ? g : i, typeof g === j ? g.call(h, {
 			name: "PokemonId",
 			hash: {},
 			data: e
-		}) : g)) + '.png"/>\r\n        <div id="pokemon-type">\r\n' + (null != (f = c.each.call(h, null != b ? b.PokemonTypes : b, {
+		}) : g)) + '.png" />\r\n    <div id="pokemon-type">\r\n' + (null != (f = c.each.call(h, null != b ? b.PokemonTypes : b, {
 			name: "each",
 			hash: {},
 			fn: a.program(5, e, 0),
 			inverse: a.noop,
 			data: e
-		})) ? f : "") + '        </div>\r\n        <div id="pokemon-iv">\r\n            <div> Attack <span class="attack">' + k((g = null != (g = c.IndividualAttack || (null != b ? b.IndividualAttack : b)) ? g : i, typeof g === j ? g.call(h, {
+		})) ? f : "") + '\r\n    </div>\r\n    <div id="pokemon-iv">\r\n        <div> Attack <span class="attack">' + k((g = null != (g = c.IndividualAttack || (null != b ? b.IndividualAttack : b)) ? g : i, typeof g === j ? g.call(h, {
 			name: "IndividualAttack",
 			hash: {},
 			data: e
-		}) : g)) + '</span> </div>\r\n            <div> Defense <span class="defense">' + k((g = null != (g = c.IndividualDefense || (null != b ? b.IndividualDefense : b)) ? g : i, typeof g === j ? g.call(h, {
+		}) : g)) + '</span> </div>\r\n        <div> Defense <span class="defense">' + k((g = null != (g = c.IndividualDefense || (null != b ? b.IndividualDefense : b)) ? g : i, typeof g === j ? g.call(h, {
 			name: "IndividualDefense",
 			hash: {},
 			data: e
-		}) : g)) + '</span> </div>\r\n            <div> Stamina <span class="stamina">' + k((g = null != (g = c.IndividualStamina || (null != b ? b.IndividualStamina : b)) ? g : i, typeof g === j ? g.call(h, {
+		}) : g)) + '</span> </div>\r\n        <div> Stamina <span class="stamina">' + k((g = null != (g = c.IndividualStamina || (null != b ? b.IndividualStamina : b)) ? g : i, typeof g === j ? g.call(h, {
 			name: "IndividualStamina",
 			hash: {},
 			data: e
-		}) : g)) + '</span> </div>\r\n        </div>\r\n        <div class="total-iv">' + k((c.round || b && b.round || i).call(h, null != b ? b.Perfection : b, 2, {
+		}) : g)) + '</span> </div>\r\n    </div>\r\n    <div class="total-iv">' + k((c.round || b && b.round || i).call(h, null != b ? b.Perfection : b, 2, {
 			name: "round",
 			hash: {},
 			data: e
-		})) + '%</div>\r\n        <div class="poke-cp">' + k((g = null != (g = c.Cp || (null != b ? b.Cp : b)) ? g : i, typeof g === j ? g.call(h, {
+		})) + "%</div>\r\n" + (null != (f = c.if.call(h, null != b ? b.Level : b, {
+			name: "if",
+			hash: {},
+			fn: a.program(7, e, 0),
+			inverse: a.noop,
+			data: e
+		})) ? f : "") + '    <div class="poke-cp">' + k((g = null != (g = c.Cp || (null != b ? b.Cp : b)) ? g : i, typeof g === j ? g.call(h, {
 			name: "Cp",
 			hash: {},
 			data: e
-		}) : g)) + '</div>\r\n        <div class="move move1">' + k((g = null != (g = c.Move1Name || (null != b ? b.Move1Name : b)) ? g : i, typeof g === j ? g.call(h, {
+		}) : g)) + '</div>\r\n    <div class="poke-hp">' + k((g = null != (g = c.Stamina || (null != b ? b.Stamina : b)) ? g : i, typeof g === j ? g.call(h, {
+			name: "Stamina",
+			hash: {},
+			data: e
+		}) : g)) + " / " + k((g = null != (g = c.StaminaMax || (null != b ? b.StaminaMax : b)) ? g : i, typeof g === j ? g.call(h, {
+			name: "StaminaMax",
+			hash: {},
+			data: e
+		}) : g)) + '</div>\r\n    <div class="move move1">' + k((g = null != (g = c.Move1Name || (null != b ? b.Move1Name : b)) ? g : i, typeof g === j ? g.call(h, {
 			name: "Move1Name",
 			hash: {},
 			data: e
-		}) : g)) + '</div>\r\n        <div class="move move2">' + k((g = null != (g = c.Move2Name || (null != b ? b.Move2Name : b)) ? g : i, typeof g === j ? g.call(h, {
+		}) : g)) + '</div>\r\n    <div class="move move2">' + k((g = null != (g = c.Move2Name || (null != b ? b.Move2Name : b)) ? g : i, typeof g === j ? g.call(h, {
 			name: "Move2Name",
 			hash: {},
 			data: e
-		}) : g)) + '</div>\r\n        <div class="pkm-candies">\r\n            <span id="pkm-candies-val">' + k((g = null != (g = c.FamilyCandies || (null != b ? b.FamilyCandies : b)) ? g : i, typeof g === j ? g.call(h, {
+		}) : g)) + '</div>\r\n    <div class="pkm-candies">\r\n        <span id="pkm-candies-val">' + k((g = null != (g = c.FamilyCandies || (null != b ? b.FamilyCandies : b)) ? g : i, typeof g === j ? g.call(h, {
 			name: "FamilyCandies",
 			hash: {},
 			data: e
-		}) : g)) + '</span>\r\n            <span id="pkm-candies-req"></span>\r\n        </div>\r\n\r\n        <div class="controls">\r\n            <div id="transfer-pokemon-button" class="pokemon-info-button" tabindex="-1">\r\n                <div class="confirm">are you sure? <span id="confirm-transfer" class="confirm-button">yes</span></div>\r\n                <i class="fa fa-trash fa-lg"></i> transfer\r\n            </div>\r\n            <div id="evolve-pokemon-button" class="pokemon-info-button" tabindex="-1">\r\n                <div class="confirm">are you sure? <span id="confirm-evolve" class="confirm-button">yes</span></div>\r\n                <div class="button-disabled-reason">Don\'t even try</div>\r\n                <i class="fa fa-arrow-circle-up fa-lg"></i>\r\n                <span id="evolve-pokemon-button-text">evolve</span>\r\n            </div>\r\n            <div id="upgrade-pokemon-button" class="pokemon-info-button" tabindex="-1">\r\n                <div class="confirm">are you sure? <span id="confirm-upgrade" class="confirm-button">yes</span> <span id="confirm-upgrade-max" class="confirm-button">max</span></div>\r\n                <i class="fa fa-rocket fa-lg"></i> Upgrade\r\n            </div>\r\n\r\n        </div>\r\n    </div>'
+		}) : g)) + '</span>\r\n        <span id="pkm-candies-req"></span>\r\n    </div>\r\n    <div class="poke-catch">' + k((g = null != (g = c.CreationDateTime || (null != b ? b.CreationDateTime : b)) ? g : i, typeof g === j ? g.call(h, {
+			name: "CreationDateTime",
+			hash: {},
+			data: e
+		}) : g)) + '</div>\r\n    <div class="controls">\r\n        <div id="transfer-pokemon-button" class="pokemon-info-button" tabindex="-1">\r\n            <div class="confirm">are you sure? <span id="confirm-transfer" class="confirm-button">yes</span></div>\r\n            <i class="fa fa-trash fa-lg"></i> transfer\r\n        </div>\r\n        <div id="evolve-pokemon-button" class="pokemon-info-button" tabindex="-1">\r\n            <div class="confirm">are you sure? <span id="confirm-evolve" class="confirm-button">yes</span></div>\r\n            <div class="button-disabled-reason">Don\'t even try</div>\r\n            <i class="fa fa-arrow-circle-up fa-lg"></i>\r\n            <span id="evolve-pokemon-button-text">evolve</span>\r\n        </div>\r\n        <div id="upgrade-pokemon-button" class="pokemon-info-button" tabindex="-1">\r\n            <div class="confirm">are you sure? <span id="confirm-upgrade" class="confirm-button">yes</span> <span id="confirm-upgrade-max" class="confirm-button">max</span></div>\r\n            <i class="fa fa-rocket fa-lg"></i> Upgrade\r\n        </div>\r\n    </div>\r\n</div>';
 	},
 	useData: !0
 }), this.app.templates.PokemonInfoPopup = Handlebars.template({
@@ -23873,12 +23908,11 @@ this.app = this.app || {}, this.app.templates = this.app.templates || {}, this.a
 			name: "Perfection",
 			hash: {},
 			data: e
-		}) : f)) + '%</span>\r\n        </div>\r\n\r\n        <div class="iw-detail">\r\n            <span class="iw-detail-header">CP</span>\r\n            <span class="iw-detail-value">' + j((f = null != (f = c.Cp || (null != b ? b.Cp : b)) ? f : h,
-			typeof f === i ? f.call(g, {
-				name: "Cp",
-				hash: {},
-				data: e
-			}) : f)) + "/" + j((f = null != (f = c.MaxCp || (null != b ? b.MaxCp : b)) ? f : h, typeof f === i ? f.call(g, {
+		}) : f)) + '%</span>\r\n        </div>\r\n\r\n        <div class="iw-detail">\r\n            <span class="iw-detail-header">CP</span>\r\n            <span class="iw-detail-value">' + j((f = null != (f = c.Cp || (null != b ? b.Cp : b)) ? f : h, typeof f === i ? f.call(g, {
+			name: "Cp",
+			hash: {},
+			data: e
+		}) : f)) + "/" + j((f = null != (f = c.MaxCp || (null != b ? b.MaxCp : b)) ? f : h, typeof f === i ? f.call(g, {
 			name: "MaxCp",
 			hash: {},
 			data: e
