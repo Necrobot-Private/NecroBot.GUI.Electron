@@ -1,5 +1,5 @@
+<h1 align="center">NecroBot.GUI.Electron</h1>
 <center>
-  <h2>NecroBot.GUI.Electron</h2>
-  [![devDependencies Status](https://david-dm.org/necrobot-private/NecroBot.GUI.Electron/dev-status.svg)](https://david-dm.org/necrobot-private/NecroBot.GUI.Electron?type=dev)
+  <a href="https://david-dm.org/necrobot-private/NecroBot.GUI.Electron?type=dev" title="devDependencies status"><img src="https://david-dm.org/necrobot-private/NecroBot.GUI.Electron/dev-status.svg"/></a>
 </center>
 Electron App for PokeEase
