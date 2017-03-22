@@ -25,9 +25,6 @@
   },
   "build": {
     "appId": "necrobot2.gui",
-    "productName": "NecroBot2 GUI",
-    "win": {
-      "iconUrl": "http://i.imgur.com/PD5Nx4d.png"
-    }
+    "productName": "NecroBot2 GUI"
   }
 }
