@@ -19,10 +19,9 @@
   "author": "NecroBot2-Private Team",
   "license": "CC0-1.0",
   "devDependencies": {
-    "electron": "^1.4.15",
-    "electron-builder": "^17.1.1",
-    "electron-packager": "^8.3.0",
-    "extract-zip": "1.6.0"
+    "electron": "^1.6.8",
+    "electron-builder": "^17.8.0",
+    "electron-packager": "^8.7.0"
   },
   "build": {
     "appId": "necrobot2.gui",
